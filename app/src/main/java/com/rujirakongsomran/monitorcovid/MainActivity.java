@@ -3,6 +3,8 @@ package com.rujirakongsomran.monitorcovid;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
@@ -12,6 +14,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
+import com.rujirakongsomran.monitorcovid.Adapter.CovidAdapter;
 import com.rujirakongsomran.monitorcovid.Model.CovidData;
 import com.rujirakongsomran.monitorcovid.Model.RootObject;
 
@@ -22,6 +25,7 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
     private RequestQueue mQueue;
+    RecyclerView recycler_posts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +37,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void initInstances() {
         mQueue = Volley.newRequestQueue(this);
+        recycler_posts = (RecyclerView) findViewById(R.id.recycler_posts);
+        recycler_posts.setHasFixedSize(true);
+        recycler_posts.setLayoutManager(new LinearLayoutManager(this));
+
         jsonParse();
     }
 
@@ -59,6 +67,8 @@ public class MainActivity extends AppCompatActivity {
                             covidData.setTotStringEmptyCases1Mpop(rootObject.getCovid().get(i).getTotStringEmptyCases1Mpop());
                             covidDataArrayList.add(covidData);
                         }
+                        CovidAdapter covidAdapter = new CovidAdapter(MainActivity.this, covidDataArrayList);
+                        recycler_posts.setAdapter(covidAdapter);
                     }
                 }, new Response.ErrorListener() {
             @Override
