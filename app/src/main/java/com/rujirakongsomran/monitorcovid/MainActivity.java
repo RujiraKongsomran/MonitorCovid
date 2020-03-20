@@ -5,6 +5,7 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
@@ -27,6 +28,9 @@ public class MainActivity extends AppCompatActivity {
     private RequestQueue mQueue;
     RecyclerView recycler_posts;
 
+    SwipeRefreshLayout swipeRefreshLayout;
+    CovidAdapter covidAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +46,16 @@ public class MainActivity extends AppCompatActivity {
         recycler_posts.setLayoutManager(new LinearLayoutManager(this));
 
         jsonParse();
+
+        swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                jsonParse();
+                covidAdapter.notifyDataSetChanged();
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        });
     }
 
     private void jsonParse() {
@@ -67,8 +81,9 @@ public class MainActivity extends AppCompatActivity {
                             covidData.setTotStringEmptyCases1Mpop(rootObject.getCovid().get(i).getTotStringEmptyCases1Mpop());
                             covidDataArrayList.add(covidData);
                         }
-                        CovidAdapter covidAdapter = new CovidAdapter(MainActivity.this, covidDataArrayList);
+                        covidAdapter = new CovidAdapter(MainActivity.this, covidDataArrayList);
                         recycler_posts.setAdapter(covidAdapter);
+
                     }
                 }, new Response.ErrorListener() {
             @Override
